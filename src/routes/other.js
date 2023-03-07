@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 import { fork } from 'child_process';
 import os from 'node:os';
-
+import logger from "../loggers/Log4jsLogger.js";
 
 router.get('/info', (_req, res) => {
     const processInfo = {
@@ -14,7 +14,7 @@ router.get('/info', (_req, res) => {
         rss: process.memoryUsage().rss,
         numberOfProcessors: os.cpus().length
     };
-    
+    //console.log(processInfo);
     res.status(200).json(processInfo);
 })
 

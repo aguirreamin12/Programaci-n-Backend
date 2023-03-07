@@ -8,16 +8,18 @@ import {engine} from 'express-handlebars';
 import path from 'path';
 import {fileURLToPath} from 'url';
 import mongoStore from 'connect-mongo';
-
+import compression from 'compression';
 import minimist from 'minimist';
-
+import logger from "./loggers/Log4jsLogger.js";
+import loggerMiddleware from "./middlewares/routesLogger.middleware.js";
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(loggerMiddleware);
 app.use(express.static('public'));
-
+app.use(compression());
 app.set('views', './src/views');
 app.set('view engine', 'hbs');
 
@@ -52,6 +54,11 @@ app.use('/api/carrito', cartRouter);
 app.use('/api/usuario', userRouter);
 app.use('/test', otherRouter);
 
+
+app.all("*", (req, res) => {
+    res.status(404).json({"error": "ruta no existente"})
+  });
+
 /* --------------- Leer el puerto por consola o setear default -------------- */
 
 const options = {
@@ -63,10 +70,17 @@ const options = {
     }
 };
 
+app._router.stack.forEach(function (r) {
+    if (r.route && r.route.path) {
+      console.log(r.route.path)
+    }
+  });
+
 const { PORT } = minimist(process.argv.slice(2), options);
 
 const server = app.listen(PORT, () => {
-    console.log(` >>>>> 🚀 Server started at http://localhost:${PORT}`)
+    logger.info(`🚀 Server started at http://localhost:${PORT}`)
     })
     
-server.on('error', (err) => console.log(err));
+server.on('error', (err) => logger.error(err));
+
