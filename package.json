@@ -1,10 +1,10 @@
 {
-  "name": "entrega-32",
+  "name": "entrega-34",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "server": "nodemon --inspect ./src/server.js -p 3030"
+    "start": "node ./src/server.js"
   },
   "keywords": [],
   "license": "ISC",
