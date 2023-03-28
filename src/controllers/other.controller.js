@@ -1,10 +1,9 @@
-import express from "express";
-const router = express.Router();
-import { fork } from 'child_process';
-import os from 'node:os';
-import logger from "../loggers/Log4jsLogger.js";
+import os from "node:os";
+import {fork} from "child_process";
 
-router.get('/info', (_req, res) => {
+const randomNumbersGeneratorFork = fork('./src/utils/functions/randomNumbersGenerator.js')
+
+export async function getInfo(req, res) {
     const processInfo = {
         platform: process.platform,
         version: process.version,
@@ -14,22 +13,14 @@ router.get('/info', (_req, res) => {
         rss: process.memoryUsage().rss,
         numberOfProcessors: os.cpus().length
     };
-    //console.log(processInfo);
     res.status(200).json(processInfo);
-})
+}
 
-const randomNumbersGeneratorFork = fork('./src/functions/randomNumbersGenerator.js')
-
-router.get('/randoms', (req, res) => {
-    
+export async function getRandomNumbers(req, res) {
     const cant = req.query.cant || 5000;
-    
+
     randomNumbersGeneratorFork.on('message', (resultado) => {
         res.status(200).json(resultado);
     })
     randomNumbersGeneratorFork.send(cant);
-    console.log('Lista generada')
-    
-})
-
-export default router;
+}
