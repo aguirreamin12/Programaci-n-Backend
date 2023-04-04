@@ -1,10 +1,10 @@
 import {CarritoService} from "../services/carrito.service.js";
 import {ProductoService} from "../services/producto.service.js";
 
-const carritoService = new CarritoService();
+const carritoService = CarritoService.getInstance();
 
 export async function create(req, res) {
-    const newCart = await carritoService.createCart();
+    const newCart = await carritoService.create();
 
     newCart
         ? res.status(200).json({"success": "Product added with ID " + newCart._id})
@@ -13,7 +13,7 @@ export async function create(req, res) {
 
 export async function remove(req, res) {
     const {id} = req.params;
-    const wasDeleted = await carritoService.deleteCartById(id);
+    const wasDeleted = await carritoService.deleteById(id);
 
     wasDeleted
         ? res.status(200).json({"success": "cart successfully removed"})
